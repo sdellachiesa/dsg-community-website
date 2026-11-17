@@ -1,5 +1,5 @@
 
-import maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.mjs';
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.18.0/dist/maplibre-gl.mjs';
 
 // Only initialise the map on pages that contain the map container
 const mapContainer = document.getElementById('community-map');
