@@ -3,7 +3,9 @@ module.exports = function (eleventyConfig) {
 
   // Diagnostic: confirm that this configuration file is loaded
   console.log("### MY ELEVENTY CONFIG IS LOADED ###");
-
+  eleventyConfig.setFrontMatterParsingOptions({
+  excerpt: false
+  });
   // Copy images and CSS to the final website
   eleventyConfig.addPassthroughCopy("src/assets");
 
