@@ -1,0 +1,51 @@
+
+[
+  {
+    "name": "Example Steward 01",
+    "institution": "Example Institute North",
+    "city": "Hamburg",
+    "coordinates": [9.99, 53.55]
+  },
+  {
+    "name": "Example Steward 02",
+    "institution": "Example University",
+    "city": "Berlin",
+    "coordinates": [13.40, 52.52]
+  },
+  {
+    "name": "Example Steward 03",
+    "institution": "Example Research Centre",
+    "city": "Munich",
+    "coordinates": [11.58, 48.14]
+  },
+  {
+    "name": "Example Steward 04",
+    "institution": "Example Institute West",
+    "city": "Cologne",
+    "coordinates": [6.96, 50.94]
+  },
+  {
+    "name": "Example Steward 05",
+    "institution": "Example University",
+    "city": "Dresden",
+    "coordinates": [13.74, 51.05]
+  },
+  {
+    "name": "Example Steward 06",
+    "institution": "Example Research Centre",
+    "city": "Frankfurt",
+    "coordinates": [8.68, 50.11]
+  },
+  {
+    "name": "Example Steward 07",
+    "institution": "Example Institute",
+    "city": "Stuttgart",
+    "coordinates": [9.18, 48.78]
+  },
+  {
+    "name": "Example Steward 08",
+    "institution": "Example University",
+    "city": "Leipzig",
+    "coordinates": [12.37, 51.34]
+  }
+]
