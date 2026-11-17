@@ -14,7 +14,7 @@ if (mapContainer) {
     container: mapContainer,
     style: 'https://tiles.openfreemap.org/styles/positron',
     center: [10.45, 51.16],
-    zoom: 5.2,
+    zoom: 4.8,
     minZoom: 4,
     maxZoom: 12
   });
