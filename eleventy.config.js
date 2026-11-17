@@ -1,6 +1,9 @@
 
 module.exports = function (eleventyConfig) {
 
+  // Diagnostic: confirm that this configuration file is loaded
+  console.log("### MY ELEVENTY CONFIG IS LOADED ###");
+
   // Copy images and CSS to the final website
   eleventyConfig.addPassthroughCopy("src/assets");
 
@@ -11,7 +14,6 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.setTemplateFormats(["njk", "md", "html"]);
 
   return {
-
     // Website source and output folders
     dir: {
       input: "src",
@@ -22,6 +24,5 @@ module.exports = function (eleventyConfig) {
     // Allow Nunjucks in Markdown and HTML
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk"
-
   };
 };
