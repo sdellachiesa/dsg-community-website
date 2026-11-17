@@ -92,6 +92,13 @@ a:hover {
   letter-spacing: 1px;
 }
 
+.brand-logo {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .main-navigation {
   display: flex;
   flex-wrap: wrap;
