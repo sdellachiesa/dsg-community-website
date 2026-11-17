@@ -3,9 +3,9 @@ module.exports = function (eleventyConfig) {
 
   // Diagnostic: confirm that this configuration file is loaded
   console.log("### MY ELEVENTY CONFIG IS LOADED ###");
-  eleventyConfig.setFrontMatterParsingOptions({
-  excerpt: false
-  });
+  const matter = require("gray-matter");
+  const test = matter("---\ntitle: Test\n---\nHello");
+  console.log("### FRONT MATTER TEST:", test.data.title);
   // Copy images and CSS to the final website
   eleventyConfig.addPassthroughCopy("src/assets");
 
