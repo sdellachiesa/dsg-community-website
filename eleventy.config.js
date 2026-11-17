@@ -3,9 +3,13 @@ module.exports = function (eleventyConfig) {
 
   // Diagnostic: confirm that this configuration file is loaded
   console.log("### MY ELEVENTY CONFIG IS LOADED ###");
-  const matter = require("gray-matter");
-  const test = matter("---\ntitle: Test\n---\nHello");
-  console.log("### FRONT MATTER TEST:", test.data.title);
+  const fs = require("fs");
+const matter = require("gray-matter");
+const source = fs.readFileSync("src/index.njk", "utf8");
+const parsed = matter(source);
+
+console.log("### ACTUAL FILE TITLE:", parsed.data.title);
+console.log("### CONTENT STARTS:", JSON.stringify(parsed.content.slice(0, 80)));
   // Copy images and CSS to the final website
   eleventyConfig.addPassthroughCopy("src/assets");
 
