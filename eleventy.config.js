@@ -7,7 +7,11 @@ module.exports = function (eleventyConfig) {
   // Register the base layout
   eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
 
+  // Explicitly register the template formats
+  eleventyConfig.setTemplateFormats(["njk", "md", "html"]);
+
   return {
+
     // Website source and output folders
     dir: {
       input: "src",
@@ -15,11 +19,9 @@ module.exports = function (eleventyConfig) {
       output: "_site"
     },
 
-    // File formats processed by Eleventy
-    templateFormats: ["njk", "md", "html"],
-
     // Allow Nunjucks in Markdown and HTML
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk"
+
   };
 };
