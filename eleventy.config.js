@@ -4,6 +4,9 @@ module.exports = function (eleventyConfig) {
   // Copy images and CSS to the final website
   eleventyConfig.addPassthroughCopy("src/assets");
 
+  // Register the base layout
+  eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
+
   return {
     // Website source and output folders
     dir: {
