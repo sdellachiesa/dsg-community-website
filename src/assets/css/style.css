@@ -1,0 +1,243 @@
+
+/* =================================
+   1. DESIGN VARIABLES
+================================= */
+
+:root {
+  --navy: #18344f;
+  --navy-light: #294d6b;
+  --gold: #c49a52;
+  --gold-light: #e5d5b5;
+
+  --background: #ffffff;
+  --background-soft: #f4f6f8;
+
+  --text: #263442;
+  --text-muted: #687785;
+
+  --border: #e1e6eb;
+
+  --container-width: 1120px;
+}
+
+/* =================================
+   2. GENERAL STYLES
+================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: var(--background);
+  line-height: 1.65;
+}
+
+a {
+  color: var(--navy);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--gold);
+}
+
+.container {
+  width: min(90%, var(--container-width));
+  margin: 0 auto;
+}
+
+/* =================================
+   3. HEADER AND NAVIGATION
+================================= */
+
+.site-header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--navy);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.main-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.main-navigation a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+/* =================================
+   4. MAIN CONTENT
+================================= */
+
+main {
+  min-height: 65vh;
+}
+
+.hero {
+  background: var(--navy);
+  color: white;
+  padding: 100px 0;
+}
+
+.hero h1 {
+  max-width: 750px;
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.15;
+  margin: 0 0 24px;
+}
+
+.hero p {
+  max-width: 650px;
+  font-size: 19px;
+  color: #e0e8ef;
+}
+
+.section {
+  padding: 75px 0;
+}
+
+.section-soft {
+  background: var(--background-soft);
+}
+
+.section h2 {
+  color: var(--navy);
+  font-size: 30px;
+  margin-top: 0;
+}
+
+.eyebrow {
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.card {
+  padding: 28px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.card h3 {
+  color: var(--navy);
+  margin-top: 0;
+}
+
+.button {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  padding: 12px 22px;
+  border-radius: 5px;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+.button:hover {
+  background: var(--gold-light);
+  color: var(--navy);
+}
+
+/* =================================
+   5. FOOTER
+================================= */
+
+.site-footer {
+  background: #122a40;
+  color: #dce5ec;
+  padding: 35px 0;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* =================================
+   6. RESPONSIVE DESIGN
+================================= */
+
+@media (max-width: 850px) {
+  .header-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px 0;
+  }
+
+  .main-navigation {
+    gap: 12px 18px;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 550px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 65px 0;
+  }
+
+  .section {
+    padding: 50px 0;
+  }
+}
