@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Website for the Data Stewardship in Germany Community",
   "scripts": {
-    "build": "eleventy",
+    "build": "eleventy && node -e \"console.log(require('fs').readFileSync('_site/index.html','utf8').slice(0,500))\"",
     "start": "eleventy --serve"
   },
   "devDependencies": {
