@@ -12,7 +12,7 @@ if (mapContainer) {
   // Create the dark map centred on Germany
   const map = new maplibregl.Map({
     container: mapContainer,
-    style: 'https://tiles.openfreemap.org/styles/dark',
+    style: 'https://tiles.openfreemap.org/styles/positron',
     center: [10.45, 51.16],
     zoom: 5.2,
     minZoom: 4,
