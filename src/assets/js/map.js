@@ -26,7 +26,7 @@ if (mapContainer) {
     const popupContent = document.createElement('div');
 
     const name = document.createElement('strong');
-    name.textContent = location.name;
+    name.textContent = location['job-profile'];
 
     const institution = document.createElement('div');
     institution.textContent = location.institution;
