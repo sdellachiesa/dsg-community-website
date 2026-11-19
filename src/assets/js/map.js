@@ -171,8 +171,8 @@ if (mapContainer) {
 
       // Larger groups: spiral arrangement
       const angleStep = 0.72;
-      const startRadius = 35;
-      const radiusStep = 14;
+      const startRadius = 30;
+      const radiusStep = 9;
 
       for (let i = 0; i < count; i++) {
 
