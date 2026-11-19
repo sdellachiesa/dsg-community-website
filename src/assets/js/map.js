@@ -6,14 +6,14 @@ const mapContainer = document.getElementById('community-map');
 
 if (mapContainer) {
 
+  // Configuration
+  const EXPLODE_ZOOM = 8;
+  const ANIMATION_DURATION = 550;
+  const MARKER_STAGGER = 45;
+
   // Read Data Steward data
   const dataElement = document.getElementById('datastewards-data');
   const locations = dataElement ? JSON.parse(dataElement.textContent) : [];
-
-  // Configuration
-  const EXPLODE_ZOOM = 8;
-  const ANIMATION_DURATION = 650;
-  const MARKER_SPACING = 42;
 
   // Group records with identical coordinates
   const groupedLocations = new Map();
@@ -57,7 +57,29 @@ if (mapContainer) {
 
   map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-  // SVG overlay for animated connecting lines
+  // Keep information popups above all markers
+  const popupStyles = document.createElement('style');
+
+  popupStyles.textContent = `
+    .maplibregl-popup.datasteward-popup {
+      z-index: 99999 !important;
+    }
+
+    .datasteward-popup .maplibregl-popup-content {
+      position: relative;
+      z-index: 99999 !important;
+      background: #ffffff;
+      color: #222222;
+      padding: 12px 16px;
+      border-radius: 7px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+      max-width: 280px;
+    }
+  `;
+
+  document.head.appendChild(popupStyles);
+
+  // SVG overlay for spider legs
   mapContainer.style.position = 'relative';
 
   const svgNS = 'http://www.w3.org/2000/svg';
@@ -75,10 +97,9 @@ if (mapContainer) {
 
   mapContainer.appendChild(lineOverlay);
 
-  // Keep track of expanded groups
   const groupStates = [];
 
-  // Create popup for one Data Steward
+  // Create popup for an individual Data Steward
   function createPopup(member) {
 
     const content = document.createElement('div');
@@ -94,47 +115,83 @@ if (mapContainer) {
 
     content.append(name, institution, city);
 
-    return new maplibregl.Popup({ offset: 25 })
-      .setDOMContent(content);
+    const popup = new maplibregl.Popup({
+      offset: 25,
+      className: 'datasteward-popup'
+    }).setDOMContent(content);
+
+    // Explicitly bring the popup to the front when opened
+    popup.on('open', () => {
+
+      const element = popup.getElement();
+
+      if (element) {
+        element.style.zIndex = '99999';
+      }
+
+    });
+
+    return popup;
   }
 
-  // Smooth spring-like easing
-  function easing(t) {
+  // Smooth animation easing
+  function easeOutBack(t) {
+
     const c1 = 1.35;
     const c3 = c1 + 1;
 
     return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   }
 
-  // Calculate radial positions around the original location
+  // Calculate spiderfy positions
   function getTargetPositions(group) {
-
-    const center = map.project([
-      group.longitude,
-      group.latitude
-    ]);
 
     const count = group.members.length;
 
-    const radius = Math.max(
-      55,
-      count * MARKER_SPACING / (2 * Math.PI)
-    );
+    const positions = [];
 
-    return group.members.map((member, index) => {
+    // Small groups: circular arrangement
+    if (count <= 8) {
 
-      const angle = (index / count) * Math.PI * 2 - Math.PI / 2;
+      const radius = Math.max(65, count * 17);
 
-      return {
-        x: center.x + Math.cos(angle) * radius,
-        y: center.y + Math.sin(angle) * radius
-      };
+      for (let i = 0; i < count; i++) {
 
-    });
+        const angle =
+          (i / count) * Math.PI * 2 - Math.PI / 2;
 
+        positions.push({
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius
+        });
+
+      }
+
+    } else {
+
+      // Larger groups: spiral arrangement
+      const angleStep = 0.72;
+      const startRadius = 35;
+      const radiusStep = 14;
+
+      for (let i = 0; i < count; i++) {
+
+        const angle = i * angleStep - Math.PI / 2;
+        const radius = startRadius + i * radiusStep;
+
+        positions.push({
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius
+        });
+
+      }
+
+    }
+
+    return positions;
   }
 
-  // Update exploded marker positions and connecting lines
+  // Update marker and spider-leg positions
   function updateGroupPositions(state) {
 
     if (!state.expanded || !state.individualMarkers.length) {
@@ -151,9 +208,10 @@ if (mapContainer) {
     state.individualMarkers.forEach((marker, index) => {
 
       const target = targets[index];
+      const progress = state.progress[index];
 
-      const x = center.x + (target.x - center.x) * state.progress;
-      const y = center.y + (target.y - center.y) * state.progress;
+      const x = center.x + target.x * progress;
+      const y = center.y + target.y * progress;
 
       marker.setLngLat(map.unproject([x, y]));
 
@@ -164,41 +222,66 @@ if (mapContainer) {
       line.setAttribute('x2', x);
       line.setAttribute('y2', y);
 
-      line.style.opacity = state.progress;
+      line.style.opacity = Math.min(progress * 1.5, 0.85);
 
     });
 
   }
 
-  // Animate a group between collapsed and expanded states
+  // Animate markers individually with a staggered effect
   function animateGroup(state, expanding) {
 
-    const startProgress = state.progress;
-    const endProgress = expanding ? 1 : 0;
+    cancelAnimationFrame(state.animationFrame);
 
+    const startProgress = [...state.progress];
     const startTime = performance.now();
+
+    const count = state.individualMarkers.length;
 
     function frame(now) {
 
-      const elapsed = Math.min(
-        (now - startTime) / ANIMATION_DURATION,
-        1
-      );
+      state.individualMarkers.forEach((marker, index) => {
 
-      const eased = easing(elapsed);
+        const delay = expanding
+          ? index * MARKER_STAGGER
+          : (count - index - 1) * MARKER_STAGGER;
 
-      state.progress =
-        startProgress + (endProgress - startProgress) * eased;
+        const elapsed = Math.max(
+          0,
+          Math.min(
+            (now - startTime - delay) / ANIMATION_DURATION,
+            1
+          )
+        );
+
+        const eased = expanding
+          ? easeOutBack(elapsed)
+          : 1 - Math.pow(1 - elapsed, 3);
+
+        const target = expanding ? 1 : 0;
+
+        state.progress[index] =
+          startProgress[index] +
+          (target - startProgress[index]) * eased;
+
+      });
 
       updateGroupPositions(state);
 
-      if (elapsed < 1) {
+      const totalDuration =
+        ANIMATION_DURATION + (count - 1) * MARKER_STAGGER;
+
+      if (now - startTime < totalDuration) {
 
         state.animationFrame = requestAnimationFrame(frame);
 
       } else {
 
-        state.progress = endProgress;
+        state.progress = state.progress.map(() =>
+          expanding ? 1 : 0
+        );
+
+        updateGroupPositions(state);
 
         if (!expanding) {
           finishCollapse(state);
@@ -208,13 +291,10 @@ if (mapContainer) {
 
     }
 
-    cancelAnimationFrame(state.animationFrame);
-
     state.animationFrame = requestAnimationFrame(frame);
-
   }
 
-  // Remove exploded markers and restore the original group marker
+  // Finish collapsing a group
   function finishCollapse(state) {
 
     state.individualMarkers.forEach(marker => marker.remove());
@@ -225,14 +305,15 @@ if (mapContainer) {
 
     state.lines = [];
 
+    state.progress = [];
+
     state.expanded = false;
-    state.progress = 0;
 
     state.groupMarker.getElement().style.display = '';
 
   }
 
-  // Expand a group
+  // Spiderfy a group
   function explodeGroup(state) {
 
     if (state.expanded || state.group.members.length < 2) {
@@ -240,18 +321,15 @@ if (mapContainer) {
     }
 
     state.expanded = true;
-    state.progress = 0;
 
+    state.progress = state.group.members.map(() => 0);
+
+    // Hide original grouped marker
     state.groupMarker.getElement().style.display = 'none';
-
-    const center = map.project([
-      state.group.longitude,
-      state.group.latitude
-    ]);
 
     state.group.members.forEach(member => {
 
-      // Create individual marker at the original location
+      // Create individual gold marker at original position
       const marker = new maplibregl.Marker({
         color: '#F0B429'
       })
@@ -263,24 +341,17 @@ if (mapContainer) {
 
       marker.addTo(map);
 
-      marker.getElement().style.zIndex = '2';
+      marker.getElement().style.zIndex = '20';
 
       state.individualMarkers.push(marker);
 
-      // Create connecting line
+      // Create spider leg
       const line = document.createElementNS(svgNS, 'line');
-
-      line.setAttribute('x1', center.x);
-      line.setAttribute('y1', center.y);
-      line.setAttribute('x2', center.x);
-      line.setAttribute('y2', center.y);
 
       line.setAttribute('stroke', '#D99A28');
       line.setAttribute('stroke-width', '1.8');
-      line.setAttribute('stroke-opacity', '0.8');
+      line.setAttribute('stroke-opacity', '0.85');
       line.setAttribute('stroke-linecap', 'round');
-
-      line.style.opacity = '0';
 
       lineOverlay.appendChild(line);
 
@@ -292,7 +363,7 @@ if (mapContainer) {
 
   }
 
-  // Collapse a group
+  // Collapse a spiderfied group
   function collapseGroup(state) {
 
     if (!state.expanded) {
@@ -303,23 +374,21 @@ if (mapContainer) {
 
   }
 
-  // Create original grouped markers
+  // Create original markers
   groupedLocations.forEach(group => {
 
-    // Only create a group marker for this coordinate
     const groupMarker = new maplibregl.Marker({
       color: '#F0B429'
-    })
-      .setLngLat([
-        group.longitude,
-        group.latitude
-      ]);
+    }).setLngLat([
+      group.longitude,
+      group.latitude
+    ]);
 
     const state = {
       group,
       groupMarker,
       expanded: false,
-      progress: 0,
+      progress: [],
       individualMarkers: [],
       lines: [],
       animationFrame: null
@@ -327,7 +396,7 @@ if (mapContainer) {
 
     groupStates.push(state);
 
-    // Number badge for multiple records
+    // Number badge for grouped locations
     if (group.members.length > 1) {
 
       const badge = document.createElement('span');
@@ -359,7 +428,7 @@ if (mapContainer) {
 
       groupMarker.getElement().appendChild(badge);
 
-      // Clicking the grouped marker toggles the explosion
+      // Click to toggle spiderfy
       groupMarker.getElement().addEventListener('click', event => {
 
         event.stopPropagation();
@@ -374,7 +443,7 @@ if (mapContainer) {
 
     } else {
 
-      // A single record gets its normal popup
+      // Single location: normal popup
       groupMarker.setPopup(createPopup(group.members[0]));
 
     }
@@ -383,7 +452,7 @@ if (mapContainer) {
 
   });
 
-  // Keep exploded markers attached to their locations while the map moves
+  // Keep spiderfied markers and lines aligned when map moves
   map.on('move', () => {
 
     groupStates.forEach(state => {
@@ -392,7 +461,7 @@ if (mapContainer) {
 
   });
 
-  // Automatically explode/collapse when zooming
+  // Automatic spiderfy on zoom
   map.on('zoomend', () => {
 
     const zoom = map.getZoom();
