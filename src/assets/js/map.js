@@ -45,7 +45,7 @@ if (mapContainer) {
     });
   });
 
-  // Convert locations into GeoJSON
+  // Convert grouped locations into GeoJSON
   const features = Array.from(groupedLocations.values()).map(group => ({
     type: 'Feature',
     geometry: {
@@ -63,34 +63,6 @@ if (mapContainer) {
     features
   };
 
-  // Add CSS for spiderfied markers
-  const markerStyle = document.createElement('style');
-
-  markerStyle.textContent = `
-    .spider-marker {
-      width: 22px;
-      height: 22px;
-      padding: 0;
-      border: 2px solid #D99A28;
-      border-radius: 50%;
-      background: #FFFFFF;
-      box-shadow:
-        0 0 5px 2px rgba(229, 165, 43, 0.75),
-        0 0 14px 5px rgba(229, 165, 43, 0.4);
-      cursor: pointer;
-      transition: transform 150ms ease, box-shadow 150ms ease;
-    }
-
-    .spider-marker:hover {
-      transform: scale(1.25);
-      box-shadow:
-        0 0 7px 3px rgba(229, 165, 43, 0.9),
-        0 0 18px 7px rgba(229, 165, 43, 0.55);
-    }
-  `;
-
-  document.head.appendChild(markerStyle);
-
   // Create the map
   const map = new maplibregl.Map({
     container: mapContainer,
@@ -103,79 +75,32 @@ if (mapContainer) {
 
   map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-  // Keep track of spiderfied markers
-  let spiderMarkers = [];
-
-  // Remove all spiderfied markers
-  function clearSpiderfy() {
-    spiderMarkers.forEach(marker => marker.remove());
-    spiderMarkers = [];
-  }
-
-  // Create safe popup content for one person
-  function createPopupContent(member) {
+  // Create popup content for one or more people
+  function createPopupContent(members) {
     const content = document.createElement('div');
 
-    const name = document.createElement('strong');
-    name.textContent = member.name;
+    members.forEach((member, index) => {
 
-    const institution = document.createElement('div');
-    institution.textContent = member.institution;
+      if (index > 0) {
+        content.appendChild(document.createElement('hr'));
+      }
 
-    const city = document.createElement('div');
-    city.textContent = member.city;
+      const name = document.createElement('strong');
+      name.textContent = member.name;
 
-    content.append(name, institution, city);
+      const institution = document.createElement('div');
+      institution.textContent = member.institution;
+
+      const city = document.createElement('div');
+      city.textContent = member.city;
+
+      content.append(name, institution, city);
+    });
 
     return content;
   }
 
-  // Spread people sharing identical coordinates around their location
-  function spiderfy(coordinates, members) {
-
-    clearSpiderfy();
-
-    const count = members.length;
-
-    // Distance between the original location and spiderfied markers
-    const radius = count > 8 ? 48 : count > 4 ? 40 : 32;
-
-    members.forEach((member, index) => {
-
-      // Arrange markers evenly around a circle
-      const angle = (2 * Math.PI * index / count) - Math.PI / 2;
-
-      const offsetX = Math.cos(angle) * radius;
-      const offsetY = Math.sin(angle) * radius;
-
-      // Create the white and gold marker
-      const element = document.createElement('button');
-
-      element.className = 'spider-marker';
-      element.type = 'button';
-      element.title = member.name;
-      element.setAttribute('aria-label', member.name);
-
-      const popup = new maplibregl.Popup({
-        offset: 15,
-        closeButton: true
-      }).setDOMContent(createPopupContent(member));
-
-      // Place the marker around the original coordinates
-      const marker = new maplibregl.Marker({
-        element: element,
-        anchor: 'center',
-        offset: [offsetX, offsetY]
-      })
-        .setLngLat(coordinates)
-        .setPopup(popup)
-        .addTo(map);
-
-      spiderMarkers.push(marker);
-    });
-  }
-
-  // Add map data and layers after loading
+  // Add data and layers after the map loads
   map.on('load', () => {
 
     map.addSource('datastewards', {
@@ -185,35 +110,14 @@ if (mapContainer) {
       clusterMaxZoom: 11,
       clusterRadius: 50,
 
-      // Count all people represented by each cluster
+      // Count all people, not just coordinate groups
       clusterProperties: {
-        total_people: [
-          '+',
-          ['accumulated'],
-          ['get', 'member_count']
-        ]
+        total_people: ['+', ['get', 'member_count']]
       }
     });
 
     // -----------------------------------------
-    // CLUSTER GLOW
-    // -----------------------------------------
-
-    map.addLayer({
-      id: 'cluster-glow',
-      type: 'circle',
-      source: 'datastewards',
-      filter: ['has', 'point_count'],
-      paint: {
-        'circle-color': '#E5A52B',
-        'circle-radius': 25,
-        'circle-blur': 0.8,
-        'circle-opacity': 0.4
-      }
-    });
-
-    // -----------------------------------------
-    // CLUSTER CIRCLES
+    // CLUSTER MARKERS
     // -----------------------------------------
 
     map.addLayer({
@@ -222,10 +126,10 @@ if (mapContainer) {
       source: 'datastewards',
       filter: ['has', 'point_count'],
       paint: {
-        'circle-color': '#FFFFFF',
-        'circle-radius': 16,
-        'circle-stroke-color': '#D99A28',
-        'circle-stroke-width': 2
+        'circle-color': '#F0B429',
+        'circle-radius': 14,
+        'circle-stroke-color': '#FFFFFF',
+        'circle-stroke-width': 1.5
       }
     });
 
@@ -240,7 +144,7 @@ if (mapContainer) {
       filter: ['has', 'point_count'],
       layout: {
         'text-field': ['to-string', ['get', 'total_people']],
-        'text-size': 13,
+        'text-size': 12,
         'text-font': ['Open Sans Bold'],
         'text-allow-overlap': true,
         'text-ignore-placement': true
@@ -251,29 +155,7 @@ if (mapContainer) {
     });
 
     // -----------------------------------------
-    // INDIVIDUAL MARKER GLOW
-    // -----------------------------------------
-
-    map.addLayer({
-      id: 'individual-glow',
-      type: 'circle',
-      source: 'datastewards',
-      filter: ['!', ['has', 'point_count']],
-      paint: {
-        'circle-color': '#E5A52B',
-        'circle-radius': [
-          'case',
-          ['>', ['get', 'member_count'], 1],
-          19,
-          15
-        ],
-        'circle-blur': 0.8,
-        'circle-opacity': 0.5
-      }
-    });
-
-    // -----------------------------------------
-    // INDIVIDUAL WHITE MARKERS
+    // ORIGINAL GOLD MARKERS
     // -----------------------------------------
 
     map.addLayer({
@@ -282,15 +164,15 @@ if (mapContainer) {
       source: 'datastewards',
       filter: ['!', ['has', 'point_count']],
       paint: {
-        'circle-color': '#FFFFFF',
+        'circle-color': '#F0B429',
         'circle-radius': [
           'case',
           ['>', ['get', 'member_count'], 1],
-          10,
+          9,
           7
         ],
-        'circle-stroke-color': '#D99A28',
-        'circle-stroke-width': 2
+        'circle-stroke-color': '#FFFFFF',
+        'circle-stroke-width': 1.5
       }
     });
 
@@ -328,8 +210,6 @@ if (mapContainer) {
       const feature = event.features[0];
       const clusterId = feature.properties.cluster_id;
 
-      clearSpiderfy();
-
       map.getSource('datastewards').getClusterExpansionZoom(
         clusterId,
         (error, zoom) => {
@@ -347,49 +227,20 @@ if (mapContainer) {
     });
 
     // -----------------------------------------
-    // CLICK INDIVIDUAL LOCATION
+    // CLICK INDIVIDUAL MARKER: SHOW PEOPLE
     // -----------------------------------------
 
     map.on('click', 'individual-points', event => {
 
       const feature = event.features[0];
-      const coordinates = feature.geometry.coordinates;
       const members = JSON.parse(feature.properties.members);
 
-      // Several people at exactly the same coordinates:
-      // spread them around the original marker
-      if (members.length > 1) {
-        spiderfy(coordinates, members);
-        return;
-      }
-
-      // Only one person: show their popup
       new maplibregl.Popup({ offset: 15 })
-        .setLngLat(coordinates)
-        .setDOMContent(createPopupContent(members[0]))
+        .setLngLat(feature.geometry.coordinates)
+        .setDOMContent(createPopupContent(members))
         .addTo(map);
 
     });
-
-    // -----------------------------------------
-    // COLLAPSE SPIDERFIED MARKERS
-    // -----------------------------------------
-
-    map.on('click', event => {
-
-      const clickedFeatures = map.queryRenderedFeatures(event.point, {
-        layers: ['clusters', 'individual-points']
-      });
-
-      // Clicking elsewhere on the map collapses the spider
-      if (clickedFeatures.length === 0) {
-        clearSpiderfy();
-      }
-
-    });
-
-    // Collapse spiderfied markers when the map moves
-    map.on('movestart', clearSpiderfy);
 
     // -----------------------------------------
     // CURSOR INTERACTIONS
