@@ -8,8 +8,8 @@ if (mapContainer) {
 
   // Configuration
   const EXPLODE_ZOOM = 7;
-  const ANIMATION_DURATION = 550;
-  const MARKER_STAGGER = 45;
+  const ANIMATION_DURATION = 1000;
+  const MARKER_STAGGER = 100;
 
   // Read Data Steward data
   const dataElement = document.getElementById('datastewards-data');
