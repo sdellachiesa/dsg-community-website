@@ -10,7 +10,7 @@ if (mapContainer) {
   const dataElement = document.getElementById('datastewards-data');
   const locations = dataElement ? JSON.parse(dataElement.textContent) : [];
 
-  // Group records that have exactly the same coordinates
+  // Group records with exactly the same coordinates
   const groupedLocations = new Map();
 
   locations.forEach(location => {
@@ -45,7 +45,7 @@ if (mapContainer) {
     });
   });
 
-  // Convert grouped locations into GeoJSON
+  // Convert locations into GeoJSON
   const features = Array.from(groupedLocations.values()).map(group => ({
     type: 'Feature',
     geometry: {
@@ -63,6 +63,34 @@ if (mapContainer) {
     features
   };
 
+  // Add CSS for spiderfied markers
+  const markerStyle = document.createElement('style');
+
+  markerStyle.textContent = `
+    .spider-marker {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 2px solid #D99A28;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow:
+        0 0 5px 2px rgba(229, 165, 43, 0.75),
+        0 0 14px 5px rgba(229, 165, 43, 0.4);
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .spider-marker:hover {
+      transform: scale(1.25);
+      box-shadow:
+        0 0 7px 3px rgba(229, 165, 43, 0.9),
+        0 0 18px 7px rgba(229, 165, 43, 0.55);
+    }
+  `;
+
+  document.head.appendChild(markerStyle);
+
   // Create the map
   const map = new maplibregl.Map({
     container: mapContainer,
@@ -75,7 +103,79 @@ if (mapContainer) {
 
   map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-  // Add clustered locations after the map style loads
+  // Keep track of spiderfied markers
+  let spiderMarkers = [];
+
+  // Remove all spiderfied markers
+  function clearSpiderfy() {
+    spiderMarkers.forEach(marker => marker.remove());
+    spiderMarkers = [];
+  }
+
+  // Create safe popup content for one person
+  function createPopupContent(member) {
+    const content = document.createElement('div');
+
+    const name = document.createElement('strong');
+    name.textContent = member.name;
+
+    const institution = document.createElement('div');
+    institution.textContent = member.institution;
+
+    const city = document.createElement('div');
+    city.textContent = member.city;
+
+    content.append(name, institution, city);
+
+    return content;
+  }
+
+  // Spread people sharing identical coordinates around their location
+  function spiderfy(coordinates, members) {
+
+    clearSpiderfy();
+
+    const count = members.length;
+
+    // Distance between the original location and spiderfied markers
+    const radius = count > 8 ? 48 : count > 4 ? 40 : 32;
+
+    members.forEach((member, index) => {
+
+      // Arrange markers evenly around a circle
+      const angle = (2 * Math.PI * index / count) - Math.PI / 2;
+
+      const offsetX = Math.cos(angle) * radius;
+      const offsetY = Math.sin(angle) * radius;
+
+      // Create the white and gold marker
+      const element = document.createElement('button');
+
+      element.className = 'spider-marker';
+      element.type = 'button';
+      element.title = member.name;
+      element.setAttribute('aria-label', member.name);
+
+      const popup = new maplibregl.Popup({
+        offset: 15,
+        closeButton: true
+      }).setDOMContent(createPopupContent(member));
+
+      // Place the marker around the original coordinates
+      const marker = new maplibregl.Marker({
+        element: element,
+        anchor: 'center',
+        offset: [offsetX, offsetY]
+      })
+        .setLngLat(coordinates)
+        .setPopup(popup)
+        .addTo(map);
+
+      spiderMarkers.push(marker);
+    });
+  }
+
+  // Add map data and layers after loading
   map.on('load', () => {
 
     map.addSource('datastewards', {
@@ -87,7 +187,11 @@ if (mapContainer) {
 
       // Count all people represented by each cluster
       clusterProperties: {
-        total_people: ['+', ['get', 'member_count']]
+        total_people: [
+          '+',
+          ['accumulated'],
+          ['get', 'member_count']
+        ]
       }
     });
 
@@ -102,9 +206,9 @@ if (mapContainer) {
       filter: ['has', 'point_count'],
       paint: {
         'circle-color': '#E5A52B',
-        'circle-radius': 23,
+        'circle-radius': 25,
         'circle-blur': 0.8,
-        'circle-opacity': 0.45
+        'circle-opacity': 0.4
       }
     });
 
@@ -137,7 +241,7 @@ if (mapContainer) {
       layout: {
         'text-field': ['to-string', ['get', 'total_people']],
         'text-size': 13,
-        'text-font': ['Noto Sans Bold'],
+        'text-font': ['Open Sans Bold'],
         'text-allow-overlap': true,
         'text-ignore-placement': true
       },
@@ -164,7 +268,7 @@ if (mapContainer) {
           15
         ],
         'circle-blur': 0.8,
-        'circle-opacity': 0.55
+        'circle-opacity': 0.5
       }
     });
 
@@ -206,7 +310,7 @@ if (mapContainer) {
       layout: {
         'text-field': ['to-string', ['get', 'member_count']],
         'text-size': 10,
-        'text-font': ['Noto Sans Bold'],
+        'text-font': ['Open Sans Bold'],
         'text-allow-overlap': true,
         'text-ignore-placement': true
       },
@@ -219,62 +323,73 @@ if (mapContainer) {
     // CLICK CLUSTER: IMMEDIATE ZOOM
     // -----------------------------------------
 
-    map.on('click', 'clusters', (event) => {
-      const features = map.queryRenderedFeatures(event.point, {
-        layers: ['clusters']
-      });
+    map.on('click', 'clusters', event => {
 
-      if (!features.length) return;
+      const feature = event.features[0];
+      const clusterId = feature.properties.cluster_id;
 
-      const clusterId = features[0].properties.cluster_id;
+      clearSpiderfy();
 
       map.getSource('datastewards').getClusterExpansionZoom(
         clusterId,
         (error, zoom) => {
+
           if (error) return;
 
           map.jumpTo({
-            center: features[0].geometry.coordinates,
+            center: feature.geometry.coordinates,
             zoom: zoom
           });
+
         }
       );
+
     });
 
     // -----------------------------------------
-    // CLICK INDIVIDUAL LOCATION: SHOW PEOPLE
+    // CLICK INDIVIDUAL LOCATION
     // -----------------------------------------
 
-    map.on('click', 'individual-points', (event) => {
+    map.on('click', 'individual-points', event => {
+
       const feature = event.features[0];
+      const coordinates = feature.geometry.coordinates;
       const members = JSON.parse(feature.properties.members);
 
-      const popupContent = document.createElement('div');
+      // Several people at exactly the same coordinates:
+      // spread them around the original marker
+      if (members.length > 1) {
+        spiderfy(coordinates, members);
+        return;
+      }
 
-      members.forEach((member, index) => {
+      // Only one person: show their popup
+      new maplibregl.Popup({ offset: 15 })
+        .setLngLat(coordinates)
+        .setDOMContent(createPopupContent(members[0]))
+        .addTo(map);
 
-        if (index > 0) {
-          const separator = document.createElement('hr');
-          popupContent.appendChild(separator);
-        }
+    });
 
-        const name = document.createElement('strong');
-        name.textContent = member.name;
+    // -----------------------------------------
+    // COLLAPSE SPIDERFIED MARKERS
+    // -----------------------------------------
 
-        const institution = document.createElement('div');
-        institution.textContent = member.institution;
+    map.on('click', event => {
 
-        const city = document.createElement('div');
-        city.textContent = member.city;
-
-        popupContent.append(name, institution, city);
+      const clickedFeatures = map.queryRenderedFeatures(event.point, {
+        layers: ['clusters', 'individual-points']
       });
 
-      new maplibregl.Popup({ offset: 15 })
-        .setLngLat(feature.geometry.coordinates)
-        .setDOMContent(popupContent)
-        .addTo(map);
+      // Clicking elsewhere on the map collapses the spider
+      if (clickedFeatures.length === 0) {
+        clearSpiderfy();
+      }
+
     });
+
+    // Collapse spiderfied markers when the map moves
+    map.on('movestart', clearSpiderfy);
 
     // -----------------------------------------
     // CURSOR INTERACTIONS
