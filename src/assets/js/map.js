@@ -170,9 +170,9 @@ if (mapContainer) {
     } else {
 
       // Larger groups: spiral arrangement
-      const angleStep = 0.72;
+      const angleStep = 0.5;
       const startRadius = 30;
-      const radiusStep = 9;
+      const radiusStep = 6;
 
       for (let i = 0; i < count; i++) {
 
