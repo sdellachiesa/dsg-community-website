@@ -40,7 +40,6 @@ if (mapContainer) {
       .setDOMContent(popupContent);
 
     new maplibregl.Marker({ color: '#F0B429' })
-      .setLngLat(location.coordinates)
       .setLngLat([location.longitude, location.latitude])
       .setPopup(popup)
       .addTo(map);
