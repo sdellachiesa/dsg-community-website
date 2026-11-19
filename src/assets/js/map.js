@@ -7,7 +7,7 @@ const mapContainer = document.getElementById('community-map');
 if (mapContainer) {
 
   // Configuration
-  const EXPLODE_ZOOM = 8;
+  const EXPLODE_ZOOM = 6;
   const ANIMATION_DURATION = 550;
   const MARKER_STAGGER = 45;
 
