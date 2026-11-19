@@ -19,7 +19,11 @@ if (mapContainer) {
 
     if (
       !Number.isFinite(longitude) ||
-      !Number.isFinite(latitude)
+      !Number.isFinite(latitude) ||
+      longitude < -180 ||
+      longitude > 180 ||
+      latitude < -90 ||
+      latitude > 90
     ) {
       return;
     }
@@ -81,13 +85,9 @@ if (mapContainer) {
       clusterMaxZoom: 11,
       clusterRadius: 50,
 
-      // Count people, not just coordinate groups
+      // Count all people represented by each cluster
       clusterProperties: {
-        total_people: [
-          '+',
-          ['accumulated'],
-          ['get', 'member_count']
-        ]
+        total_people: ['+', ['get', 'member_count']]
       }
     });
 
@@ -119,7 +119,7 @@ if (mapContainer) {
       filter: ['has', 'point_count'],
       paint: {
         'circle-color': '#FFFFFF',
-        'circle-radius': 14,
+        'circle-radius': 16,
         'circle-stroke-color': '#D99A28',
         'circle-stroke-width': 2
       }
@@ -136,8 +136,10 @@ if (mapContainer) {
       filter: ['has', 'point_count'],
       layout: {
         'text-field': ['to-string', ['get', 'total_people']],
-        'text-size': 12,
-        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold']
+        'text-size': 13,
+        'text-font': ['Noto Sans Bold'],
+        'text-allow-overlap': true,
+        'text-ignore-placement': true
       },
       paint: {
         'text-color': '#222222'
@@ -204,7 +206,9 @@ if (mapContainer) {
       layout: {
         'text-field': ['to-string', ['get', 'member_count']],
         'text-size': 10,
-        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold']
+        'text-font': ['Noto Sans Bold'],
+        'text-allow-overlap': true,
+        'text-ignore-placement': true
       },
       paint: {
         'text-color': '#222222'
@@ -212,7 +216,7 @@ if (mapContainer) {
     });
 
     // -----------------------------------------
-    // CLICK CLUSTER: ZOOM IN
+    // CLICK CLUSTER: IMMEDIATE ZOOM
     // -----------------------------------------
 
     map.on('click', 'clusters', (event) => {
@@ -229,9 +233,9 @@ if (mapContainer) {
         (error, zoom) => {
           if (error) return;
 
-          map.easeTo({
+          map.jumpTo({
             center: features[0].geometry.coordinates,
-            zoom
+            zoom: zoom
           });
         }
       );
