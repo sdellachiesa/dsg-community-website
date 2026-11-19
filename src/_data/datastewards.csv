@@ -1,18 +1,52 @@
+
 job-profile,institution,city,longitude,latitude
-Mario,Example Institute North,Hamburg,9.99,53.55
-Example Steward 02,Example University,Berlin,13.40,52.52
-Example Steward 03,Example Research Centre,Munich,11.58,48.14
-Example Steward 04,Example Institute West,Cologne,6.96,50.94
-Example Steward 05,Example University,Dresden,13.74,51.05
-Example Steward 06,Example Research Centre,Frankfurt,8.68,50.11
-Example Steward 07,Example Institute,Stuttgart,9.18,48.78
-Example Steward 08,Example University,Leipzig,12.37,51.34
-Stefano,Example Institute North,Hamburg,9.99,53.55
-Stefano1,Example Institute North,Hamburg,9.99,53.55
-Stefano2,Example Institute North,Hamburg,9.99,53.55
-Stefano3,Example Institute North,Hamburg,9.99,53.55
-Stefano4,Example Institute North,Hamburg,9.99,53.55
-Stefano5,Example Institute North,Hamburg,9.99,53.55
-Stefano6,Example Institute North,Hamburg,9.99,53.55
-Stefano7,Example Institute North,Hamburg,9.99,53.55
-Stefano8,Example Institute North,Hamburg,9.99,53.55
+Data Steward,North Sea Research Institute,Hamburg,9.9937,53.5511
+Research Data Manager,Berlin Institute for Open Knowledge,Berlin,13.4050,52.5200
+Open Science Officer,Bavarian Research Centre,Munich,11.5820,48.1351
+Data Librarian,Rhine Academic Institute,Cologne,6.9603,50.9375
+Research Data Coordinator,Elbe University Research Office,Dresden,13.7373,51.0504
+Research Data Manager,Main Research Institute,Frankfurt,8.6821,50.1109
+Data Steward,Swabian Science Centre,Stuttgart,9.1829,48.7758
+Open Science Officer,Saxon Research Network,Leipzig,12.3731,51.3397
+Research Data Specialist,Westphalia Knowledge Institute,Dortmund,7.4653,51.5136
+Data Management Officer,Lower Saxony Research Centre,Hannover,9.7320,52.3759
+Data Steward,University Data Services,Bremen,8.8017,53.0793
+Research Data Librarian,Maritime Science Institute,Kiel,10.1228,54.3233
+Open Research Coordinator,Baltic Research Centre,Rostock,12.0991,54.0924
+Research Data Manager,University of Applied Data Science,Magdeburg,11.6276,52.1205
+Data Steward,Central German Research Institute,Halle,11.9688,51.4969
+Research Data Coordinator,Thuringian Knowledge Centre,Erfurt,11.0299,50.9848
+Open Science Specialist,Franconian Research Institute,Nuremberg,11.0767,49.4521
+Data Librarian,Main River University,Wurzburg,9.9320,49.7913
+Research Data Manager,Upper Franconia Science Centre,Bayreuth,11.5763,49.9427
+Data Steward,Black Forest Research Institute,Freiburg,7.8421,47.9990
+Open Science Officer,Upper Rhine University,Karlsruhe,8.4037,49.0069
+Research Data Specialist,Neckar Research Centre,Heidelberg,8.6908,49.3988
+Data Management Coordinator,Swabian University Network,Ulm,9.9937,48.4011
+Research Data Manager,Allgau Science Institute,Kempten,10.3157,47.7267
+Data Steward,Palatinate Research Centre,Kaiserslautern,7.7689,49.4401
+Open Science Coordinator,Saarland Data Institute,Saarbrucken,7.0000,49.2402
+Research Data Librarian,Moselle Research University,Trier,6.6371,49.7499
+Data Steward,Middle Rhine Science Centre,Koblenz,7.5889,50.3569
+Research Data Manager,Lahn Valley Research Institute,Marburg,8.7707,50.8090
+Open Science Officer,University Research Services,Gießen,8.6773,50.5841
+Data Steward,East Westphalia Research Centre,Bielefeld,8.5325,52.0302
+Research Data Coordinator,Teutoburg Science Institute,Osnabrück,8.0472,52.2799
+Data Librarian,Harz Research Network,Goslar,10.4294,51.9059
+Research Data Manager,Oder Research Institute,Frankfurt an der Oder,14.5506,52.3471
+Open Science Specialist,Brandenburg Data Centre,Potsdam,13.0645,52.3906
+Data Steward,Mecklenburg Research Institute,Schwerin,11.4148,53.6355
+Research Data Coordinator,Western Pomerania Science Centre,Greifswald,13.3815,54.0931
+Research Data Manager,Oldenburg Research Network,Oldenburg,8.2146,53.1435
+Open Science Officer,East Frisia Research Institute,Emden,7.2059,53.3675
+Data Steward,Black Forest University Network,Konstanz,9.1750,47.6779
+Research Data Librarian,Lake Constance Research Centre,Friedrichshafen,9.4797,47.6618
+Research Data Manager,Upper Swabia Science Institute,Ravensburg,9.6113,47.7811
+Open Science Coordinator,Southwest Research Network,Tubingen,9.0576,48.5216
+Data Steward,Upper Danube Research Centre,Ingolstadt,11.4258,48.7665
+Research Data Specialist,Lower Bavaria Science Institute,Passau,13.4319,48.5667
+Research Data Manager,Upper Palatinate Research Centre,Regensburg,12.1016,49.0134
+Open Science Officer,Central Hesse Data Institute,Fulda,9.6773,50.5558
+Data Steward,North Hesse Research Network,Kassel,9.4797,51.3127
+Research Data Coordinator,South Thuringian Science Centre,Suhl,10.6946,50.6092
+Data Librarian,Western Saxony Research Institute,Zwickau,12.4934,50.7189
