@@ -1,95 +1,29 @@
 ---
 title: Community
-description: Discover and join the Data Stewardship in Germany Community.
+description: Discover the people and connections that make up the DSG Community.
 layout: layouts/base.njk
 permalink: /community/index.html
 ---
-
-<section class="hero">
-  <div class="container">
-    <span class="eyebrow">Our community</span>
-    <h1>Stronger together</h1>
-    <p>
-      A community of people connecting, learning and shaping
-      the future of Data Stewardship in Germany.
-    </p>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Our Community Across Germany</h2>
-    <p>
-      Explore the geographical distribution of Data Stewards
-      and institutions contributing to our community.
-    </p>
-
-    <div id="community-map"></div>
-    <script type="application/json" id="datastewards-data">
+<section class="hero"><div class="container">
+<span class="eyebrow">Our community</span><h1>Connecting Data Stewards across Germany</h1>
+<p>DSG brings together people working in data stewardship and related fields across institutions, disciplines, and regions.</p>
+</div></section>
+<section class="section"><div class="container">
+<h2>Our Community Across Germany</h2>
+<p>Explore the geographical distribution of data stewards and institutions connected through our community. Map entries help make people and expertise visible; appearing on the map does not imply formal membership.</p>
+<div id="community-map"></div>
+<script type="application/json" id="datastewards-data">
       {{ datastewards | dump | safe }}
     </script>
 <script type="module" src="/assets/js/map.js"></script>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Who is part of the community?</h2>
-    <p>
-      Our community brings together Data Stewards, research
-      data managers and professionals working in research
-      support, infrastructure and Open Science.
-    </p>
-    <p>
-      We welcome people from universities, research institutes,
-      research infrastructures and other organisations who
-      share an interest in advancing Data Stewardship.
-    </p>
-  </div>
-</section>
-
-<section class="section section-soft">
-  <div class="container">
-    <h2>What connects us?</h2>
-
-    <div class="card-grid">
-      <article class="card">
-        <h3>Exchange</h3>
-        <p>
-          Share experiences, discuss challenges and learn
-          from colleagues across institutions.
-        </p>
-      </article>
-
-      <article class="card">
-        <h3>Collaboration</h3>
-        <p>
-          Develop ideas, initiatives and joint activities
-          that benefit the wider community.
-        </p>
-      </article>
-
-      <article class="card">
-        <h3>Recognition</h3>
-        <p>
-          Strengthen the visibility and recognition of
-          Data Stewardship as a professional role.
-        </p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <h2>Get involved</h2>
-    <p>
-      Interested in contributing, exchanging ideas or
-      joining our activities? We would be happy to hear from you.
-    </p>
-    <p>
-      Contact details and information about participation
-      will be added here.
-    </p>
-  </div>
-</section>
+</div></section>
+<section class="section"><div class="container"><h2>Who is part of the community?</h2>
+<p>Our community connects data stewards, research data managers, and professionals working in research support, infrastructure, libraries, Open Science, and related areas.</p>
+<p>We welcome people from universities, research institutes, research infrastructures, and other organisations who share an interest in strengthening the profession.</p>
+</div></section>
+<section class="section section-soft"><div class="container"><h2>What connects us?</h2><div class="card-grid">
+<article class="card"><h3>Exchange</h3><p>Share experiences, discuss challenges, and learn from colleagues across institutional and disciplinary boundaries.</p></article>
+<article class="card"><h3>Collaboration</h3><p>Develop ideas, shared initiatives, and joint activities that benefit the wider community.</p></article>
+<article class="card"><h3>Collective voice</h3><p>Strengthen the visibility, recognition, and strategic influence of data stewardship.</p></article>
+</div></div></section>
+<section class="section"><div class="container"><h2>Get involved</h2><p>Interested in exchanging experiences, contributing expertise, or joining community activities? Discover opportunities through our events and shared resources.</p><a href="/activities/">Explore our activities →</a></div></section>
