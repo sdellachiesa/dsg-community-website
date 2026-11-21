@@ -126,14 +126,14 @@ main {
 }
 
 .hero h1 {
-  max-width: 750px;
+  max-width: 100%;
   font-size: clamp(36px, 5vw, 58px);
   line-height: 1.15;
   margin: 0 0 24px;
 }
 
 .hero p {
-  max-width: 650px;
+  max-width: 850px;
   font-size: 19px;
   color: #e0e8ef;
 }
